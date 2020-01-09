@@ -1,0 +1,16 @@
+table.board {
+  border-collapse: collapse;
+}
+
+td.board {
+  border: 1px solid darkgray;
+}
+
+input.cell {
+  width: 1.5em;
+  text-align: center;
+}
+
+input.cell[pattern]:invalid {
+  color: red;
+}
