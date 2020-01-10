@@ -50,25 +50,40 @@ const Board = () => {
   );
   const modelIsValid = useMemo(() => isValidModel(model), [model]);
   const [status, setStatus] = useState('');
-  const solveClick = useCallback(() => {
-    return new Promise(res => {
-      res(solve(model, setModel));
-    }).then(result => {
-      if (result) {
-        //setModel(result);
-        setStatus('Success');
-      } else {
-        setStatus("Can't solve");
-      }
-    });
+  // https://stackoverflow.com/questions/33613728/what-happens-when-using-this-setstate-multiple-times-in-react-component#
+  // claims that batching should not happen when setTimeout is used.
+  // Nevertheless I don't see any updates with this approach. Huh.
+  const solveClick = useCallback(
+    () => {
+      setTimeout(() => {
+        solve(model, setModel).then(result => {
+          if (result) {
+            setModel(result);
+            setStatus('Success');
+          } else {
+            setStatus("Can't solve");
+          }
+        });
+      }, 0);
+    },
     // const result = solve(model, setModel);
     // if (result) {
-    //   setModel(result);
+    //   //setModel(result);
     //   setStatus('Success');
     // } else {
     //   setStatus("Can't solve");
     // }
-  }, [model]);
+
+    // solve(model, setModel).then(result => {
+    //   if (result) {
+    //     setModel(result);
+    //     setStatus('Success');
+    //   } else {
+    //     setStatus("Can't solve");
+    //   }
+    // }),
+    [model]
+  );
 
   return (
     <div>

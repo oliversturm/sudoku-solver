@@ -48,105 +48,126 @@ test('solve', () => {
   // ]
   const model = modelFrom(source);
 
-  expect(solve(model)).toEqual([
-    [
-      { type: 'pre', val: 6 },
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 1 },
-      { type: 'pre', val: 9 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 5 }
-    ],
-    [
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 9 },
-      { type: 'pre', val: 6 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 1 },
-      { type: 'pre', val: 3 }
-    ],
-    [
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 1 },
-      { type: 'solver', val: 9 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 6 }
-    ],
-    [
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 6 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 9 },
-      { type: 'pre', val: 1 }
-    ],
-    [
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 1 },
-      { type: 'solver', val: 9 },
-      { type: 'pre', val: 6 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 4 }
-    ],
-    [
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 9 },
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 1 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 6 },
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 8 }
-    ],
-    [
-      { type: 'pre', val: 9 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 6 },
-      { type: 'solver', val: 3 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 1 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 2 }
-    ],
-    [
-      { type: 'pre', val: 1 },
-      { type: 'pre', val: 7 },
-      { type: 'pre', val: 6 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 5 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 9 }
-    ],
-    [
-      { type: 'pre', val: 3 },
-      { type: 'pre', val: 2 },
-      { type: 'pre', val: 8 },
-      { type: 'pre', val: 4 },
-      { type: 'pre', val: 1 },
-      { type: 'pre', val: 9 },
-      { type: 'pre', val: 5 },
-      { type: 'solver', val: 6 },
-      { type: 'pre', val: 7 }
-    ]
-  ]);
+  return solve(model).then(result => {
+    expect(result).toEqual([
+      [
+        { type: 'pre', val: 6 },
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 1 },
+        { type: 'pre', val: 9 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 5 }
+      ],
+      [
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 9 },
+        { type: 'pre', val: 6 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 1 },
+        { type: 'pre', val: 3 }
+      ],
+      [
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 1 },
+        { type: 'solver', val: 9 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 6 }
+      ],
+      [
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 6 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 9 },
+        { type: 'pre', val: 1 }
+      ],
+      [
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 1 },
+        { type: 'solver', val: 9 },
+        { type: 'pre', val: 6 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 4 }
+      ],
+      [
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 9 },
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 1 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 6 },
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 8 }
+      ],
+      [
+        { type: 'pre', val: 9 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 6 },
+        { type: 'solver', val: 3 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 1 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 2 }
+      ],
+      [
+        { type: 'pre', val: 1 },
+        { type: 'pre', val: 7 },
+        { type: 'pre', val: 6 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 5 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 9 }
+      ],
+      [
+        { type: 'pre', val: 3 },
+        { type: 'pre', val: 2 },
+        { type: 'pre', val: 8 },
+        { type: 'pre', val: 4 },
+        { type: 'pre', val: 1 },
+        { type: 'pre', val: 9 },
+        { type: 'pre', val: 5 },
+        { type: 'solver', val: 6 },
+        { type: 'pre', val: 7 }
+      ]
+    ]);
+  });
 });
+
+// test('solve 2', () => {
+//   const source = [
+//     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+//     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+//     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+//     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+//     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+//     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+//     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+//     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+//     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+//   ];
+//   const model = modelFrom(source);
+
+//   return solve(model).then(result => {
+//     expect(result).toEqual([]);
+//   });
+// });
