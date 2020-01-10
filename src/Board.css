@@ -2,6 +2,10 @@ table.board {
   border-collapse: collapse;
 }
 
+table.board.invalid {
+  background-color: lightcoral;
+}
+
 td.board {
   border: 1px solid darkgray;
 }
@@ -13,4 +17,13 @@ input.cell {
 
 input.cell[pattern]:invalid {
   color: red;
+}
+
+input.cell.pre {
+  color: green;
+  font-weight: bold;
+}
+
+input.cell.solver {
+  color: blue;
 }
