@@ -19,13 +19,13 @@ const findEmptyCells = model =>
 const recurseNumber = (model, showModel, emptyCells, cell, number) => {
   if (number > 9) return;
 
-  if (canAcceptValue(model)(cell.row, cell.col)(number)) {
+  if (canAcceptValue(model)(cell.row, cell.col)(number))
     return recurse(
       addSolverValue(model)(cell.row, cell.col)(number),
       showModel,
       emptyCells
     );
-  } else return recurseNumber(model, showModel, emptyCells, cell, number + 1);
+  else return recurseNumber(model, showModel, emptyCells, cell, number + 1);
 };
 
 const recurse = (model, showModel, emptyCells) => {
