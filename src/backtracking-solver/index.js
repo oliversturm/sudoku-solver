@@ -16,6 +16,18 @@ const findEmptyCells = model =>
       .filter(({ row, col }) => !model[row][col])
   );
 
+const recurseNumber = (model, showModel, emptyCells, cell, number) => {
+  if (number > 9) return;
+
+  if (canAcceptValue(model)(cell.row, cell.col)(number)) {
+    return recurse(
+      addSolverValue(model)(cell.row, cell.col)(number),
+      showModel,
+      emptyCells
+    );
+  } else return recurseNumber(model, showModel, emptyCells, cell, number + 1);
+};
+
 const recurse = (model, showModel, emptyCells) => {
   if (showModel) showModel(model);
 
@@ -23,16 +35,8 @@ const recurse = (model, showModel, emptyCells) => {
 
   const cell = emptyCells[0];
   const newEmptyCells = emptyCells.slice(1);
-  for (let number = 1; number <= 9; number++) {
-    if (canAcceptValue(model)(cell.row, cell.col)(number)) {
-      const result = recurse(
-        addSolverValue(model)(cell.row, cell.col)(number),
-        showModel,
-        newEmptyCells
-      );
-      if (result) return result;
-    }
-  }
+
+  return recurseNumber(model, showModel, newEmptyCells, cell, 1);
 };
 
 const solve = (model, showModel) =>
