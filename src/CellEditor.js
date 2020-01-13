@@ -7,7 +7,7 @@ const CellEditor = ({ onChange, cell }) => {
       type="text"
       pattern="[1-9]?"
       onChange={onChange}
-      value={cell ? cell.val : undefined}
+      value={cell ? cell.val : ''}
     />
   );
 };

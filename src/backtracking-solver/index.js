@@ -17,17 +17,15 @@ const findEmptyCells = model =>
   );
 
 const recurseNumber = (model, showModel, emptyCells, cell, number) => {
-  if (number > 9) return Promise.resolve();
+  if (number > 9) return;
 
   if (canAcceptValue(model)(cell.row, cell.col)(number)) {
-    return recurse(
+    const result = recurse(
       addSolverValue(model)(cell.row, cell.col)(number),
       showModel,
       emptyCells
-    ).then(result => {
-      if (result) return result;
-      else return recurseNumber(model, showModel, emptyCells, cell, number + 1);
-    });
+    );
+    if (result) return result;
   }
   return recurseNumber(model, showModel, emptyCells, cell, number + 1);
 };
@@ -35,14 +33,12 @@ const recurseNumber = (model, showModel, emptyCells, cell, number) => {
 const recurse = (model, showModel, emptyCells) => {
   if (showModel) showModel(model);
 
-  return new Promise(res => {
-    if (emptyCells.length === 0) res(model);
+  if (emptyCells.length === 0) return model;
 
-    const cell = emptyCells[0];
-    const newEmptyCells = emptyCells.slice(1);
+  const cell = emptyCells[0];
+  const newEmptyCells = emptyCells.slice(1);
 
-    res(recurseNumber(model, showModel, newEmptyCells, cell, 1));
-  });
+  return recurseNumber(model, showModel, newEmptyCells, cell, 1);
 };
 
 const solve = (model, showModel) =>

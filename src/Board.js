@@ -1,13 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import './Board.css';
 import CellEditor from './CellEditor';
-import {
-  createEmptyModel,
-  setPreValue,
-  isValidModel,
-  modelFrom
-} from './model';
-import { solve } from './backtracking-solver';
+import { setPreValue, isValidModel, modelFrom } from './model';
+import solverWorker from './backtracking-solver/solver.worker';
 
 const editorChange = (model, setModel, row, col) => e => {
   setModel(setPreValue(model)(row, col)(e.target.value));
@@ -34,6 +29,22 @@ const rows = function*(model, setModel, count) {
     );
 };
 
+const runSolver = (model, showModel) => {
+  const worker = new solverWorker();
+
+  return new Promise(res => {
+    worker.onmessage = e => {
+      const { type, model } = e.data;
+      showModel(model);
+      if (type === 'final') {
+        worker.terminate();
+        res(model);
+      }
+    };
+    worker.postMessage(model);
+  });
+};
+
 const Board = () => {
   const [model, setModel] = useState(
     modelFrom([
@@ -50,40 +61,15 @@ const Board = () => {
   );
   const modelIsValid = useMemo(() => isValidModel(model), [model]);
   const [status, setStatus] = useState('');
-  // https://stackoverflow.com/questions/33613728/what-happens-when-using-this-setstate-multiple-times-in-react-component#
-  // claims that batching should not happen when setTimeout is used.
-  // Nevertheless I don't see any updates with this approach. Huh.
-  const solveClick = useCallback(
-    () => {
-      setTimeout(() => {
-        solve(model, setModel).then(result => {
-          if (result) {
-            setModel(result);
-            setStatus('Success');
-          } else {
-            setStatus("Can't solve");
-          }
-        });
-      }, 0);
-    },
-    // const result = solve(model, setModel);
-    // if (result) {
-    //   //setModel(result);
-    //   setStatus('Success');
-    // } else {
-    //   setStatus("Can't solve");
-    // }
-
-    // solve(model, setModel).then(result => {
-    //   if (result) {
-    //     setModel(result);
-    //     setStatus('Success');
-    //   } else {
-    //     setStatus("Can't solve");
-    //   }
-    // }),
-    [model]
-  );
+  const solveClick = useCallback(() => {
+    return runSolver(model, setModel).then(result => {
+      if (result) {
+        setStatus('Success');
+      } else {
+        setStatus("Can't solve");
+      }
+    });
+  }, [model, setModel, setStatus]);
 
   return (
     <div>
@@ -95,7 +81,6 @@ const Board = () => {
         <button onClick={solveClick}>Solve</button>
         <div className="status">{status}</div>
       </div>
-      <div>{JSON.stringify(model)}</div>
     </div>
   );
 };
