@@ -1,7 +1,13 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import _ from 'lodash';
 import './Board.css';
 import CellEditor from './CellEditor';
-import { setPreValue, isValidModel, modelFrom } from './model';
+import {
+  setPreValue,
+  isValidModel,
+  modelFrom,
+  createEmptyModel
+} from './model';
 import solverWorker from './backtracking-solver/solver.worker';
 
 const editorChange = (model, setModel, row, col) => e => {
@@ -29,47 +35,58 @@ const rows = function*(model, setModel, count) {
     );
 };
 
-const runSolver = (model, showModel) => {
+const runSolver = (model, showModel, processEmptyCells) => {
   const worker = new solverWorker();
-
+  const sm = _.debounce(showModel, 30, { leading: true, maxWait: 200 });
   return new Promise(res => {
     worker.onmessage = e => {
       const { type, model } = e.data;
-      showModel(model);
+      sm(model);
       if (type === 'final') {
         worker.terminate();
+        sm.flush();
         res(model);
       }
     };
-    worker.postMessage(model);
+    worker.postMessage({ model, processEmptyCells });
   });
 };
 
+const demoBoard = [
+  [5, 3, 0, 0, 7, 0, 0, 0, 0],
+  [6, 0, 0, 1, 9, 5, 0, 0, 0],
+  [0, 9, 8, 0, 0, 0, 0, 6, 0],
+  [8, 0, 0, 0, 6, 0, 0, 0, 3],
+  [4, 0, 0, 8, 0, 3, 0, 0, 1],
+  [7, 0, 0, 0, 2, 0, 0, 0, 6],
+  [0, 6, 0, 0, 0, 0, 2, 8, 0],
+  [0, 0, 0, 4, 1, 9, 0, 0, 5],
+  [0, 0, 0, 0, 8, 0, 0, 7, 9]
+];
+
 const Board = () => {
-  const [model, setModel] = useState(
-    modelFrom([
-      [5, 3, 0, 0, 7, 0, 0, 0, 0],
-      [6, 0, 0, 1, 9, 5, 0, 0, 0],
-      [0, 9, 8, 0, 0, 0, 0, 6, 0],
-      [8, 0, 0, 0, 6, 0, 0, 0, 3],
-      [4, 0, 0, 8, 0, 3, 0, 0, 1],
-      [7, 0, 0, 0, 2, 0, 0, 0, 6],
-      [0, 6, 0, 0, 0, 0, 2, 8, 0],
-      [0, 0, 0, 4, 1, 9, 0, 0, 5],
-      [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ])
-  );
+  const [model, setModel] = useState(modelFrom(demoBoard));
   const modelIsValid = useMemo(() => isValidModel(model), [model]);
   const [status, setStatus] = useState('');
+  const [reverse, setReverse] = useState(true);
+  const reverseChanged = useCallback(e => setReverse(e.target.checked), [
+    setReverse
+  ]);
   const solveClick = useCallback(() => {
-    return runSolver(model, setModel).then(result => {
+    return runSolver(model, setModel, reverse ? 'reverse' : '').then(result => {
       if (result) {
         setStatus('Success');
       } else {
         setStatus("Can't solve");
       }
     });
-  }, [model, setModel, setStatus]);
+  }, [model, setModel, setStatus, reverse]);
+  const clear = useCallback(() => {
+    setModel(createEmptyModel());
+  }, [setModel]);
+  const reset = useCallback(() => {
+    setModel(modelFrom(demoBoard));
+  }, [setModel]);
 
   return (
     <div>
@@ -77,7 +94,21 @@ const Board = () => {
         <tbody>{Array.from(rows(model, setModel, 9))}</tbody>
       </table>
       <div>
-        <div className="info">Values marked invalid will be ignored</div>
+        <div className="info">Values marked invalid will be ignored!</div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={reverse}
+              onChange={reverseChanged}
+            />
+            Reverse (solve from bottom right)
+          </label>
+        </div>
+        <div>
+          <button onClick={clear}>Clear</button>
+          <button onClick={reset}>Reset to demo</button>
+        </div>
         <button onClick={solveClick}>Solve</button>
         <div className="status">{status}</div>
       </div>
