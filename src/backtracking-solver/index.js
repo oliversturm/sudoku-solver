@@ -1,20 +1,18 @@
-import Im from 'seamless-immutable';
+import _ from 'lodash';
 import { canAcceptValue, addSolverValue } from '../model';
 
 const zeroToEight = Array.from(Array(9).keys());
 
 const findEmptyCells = model =>
-  Im(
-    zeroToEight
-      .map(row =>
-        zeroToEight.map(col => ({
-          row,
-          col
-        }))
-      )
-      .reduce((r, v) => r.concat(v), [])
-      .filter(({ row, col }) => !model[row][col])
-  );
+  zeroToEight
+    .map(row =>
+      zeroToEight.map(col => ({
+        row,
+        col
+      }))
+    )
+    .reduce((r, v) => r.concat(v), [])
+    .filter(({ row, col }) => !model[row][col]);
 
 const recurseNumber = (model, showModel, emptyCells, cell, number) => {
   if (number > 9) return;
@@ -41,7 +39,12 @@ const recurse = (model, showModel, emptyCells) => {
   return recurseNumber(model, showModel, newEmptyCells, cell, 1);
 };
 
-const solve = (model, showModel) =>
-  recurse(model, showModel, findEmptyCells(model));
+const solve = (model, showModel, processEmptyCells) => {
+  const emptyCells = findEmptyCells(model);
+  const processedEmptyCells = (
+    { reverse: _.reverse, shuffle: _.shuffle }[processEmptyCells] || (x => x)
+  )(emptyCells);
+  return recurse(model, showModel, processedEmptyCells);
+};
 
 export { solve, findEmptyCells };
