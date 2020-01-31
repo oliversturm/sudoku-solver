@@ -1,0 +1,5 @@
+platforms/**
+!platforms/platforms.json
+plugins/**
+!plugins/fetch.json
+node_modules
