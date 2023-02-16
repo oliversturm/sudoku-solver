@@ -6,15 +6,14 @@ import {
   setPreValue,
   isValidModel,
   modelFrom,
-  createEmptyModel
+  createEmptyModel,
 } from './model';
-import solverWorker from './backtracking-solver/solver.worker';
 
-const editorChange = (model, setModel, row, col) => e => {
+const editorChange = (model, setModel, row, col) => (e) => {
   setModel(setPreValue(model)(row, col)(e.target.value));
 };
 
-const cols = function*(model, setModel, row, count) {
+const cols = function* (model, setModel, row, count) {
   for (let i = 0; i < count; i++)
     yield (
       <td key={`col${row}${i}`} className="board">
@@ -26,7 +25,7 @@ const cols = function*(model, setModel, row, count) {
     );
 };
 
-const rows = function*(model, setModel, count) {
+const rows = function* (model, setModel, count) {
   for (let i = 0; i < count; i++)
     yield (
       <tr key={`row${i}`} className="board">
@@ -36,19 +35,22 @@ const rows = function*(model, setModel, count) {
 };
 
 const runSolver = (model, showModel, processEmptyCells) => {
-  const worker = new solverWorker();
+  const solverWorker = new Worker(
+    new URL('./backtracking-solver/solver.worker.js', import.meta.url),
+    { type: 'module' } // note that this doesn't in Firefox at dev time -- build is fine
+  );
   const sm = _.debounce(showModel, 30, { leading: true, maxWait: 200 });
-  return new Promise(res => {
-    worker.onmessage = e => {
+  return new Promise((res) => {
+    solverWorker.onmessage = (e) => {
       const { type, model } = e.data;
       sm(model);
       if (type === 'final') {
-        worker.terminate();
+        solverWorker.terminate();
         sm.flush();
         res(model);
       }
     };
-    worker.postMessage({ model, processEmptyCells });
+    solverWorker.postMessage({ model, processEmptyCells });
   });
 };
 
@@ -61,7 +63,7 @@ const demoBoard = [
   [7, 0, 0, 0, 2, 0, 0, 0, 6],
   [0, 6, 0, 0, 0, 0, 2, 8, 0],
   [0, 0, 0, 4, 1, 9, 0, 0, 5],
-  [0, 0, 0, 0, 8, 0, 0, 7, 9]
+  [0, 0, 0, 0, 8, 0, 0, 7, 9],
 ];
 
 const Board = () => {
@@ -69,17 +71,20 @@ const Board = () => {
   const modelIsValid = useMemo(() => isValidModel(model), [model]);
   const [status, setStatus] = useState('');
   const [reverse, setReverse] = useState(true);
-  const reverseChanged = useCallback(e => setReverse(e.target.checked), [
-    setReverse
-  ]);
+  const reverseChanged = useCallback(
+    (e) => setReverse(e.target.checked),
+    [setReverse]
+  );
   const solveClick = useCallback(() => {
-    return runSolver(model, setModel, reverse ? 'reverse' : '').then(result => {
-      if (result) {
-        setStatus('Success');
-      } else {
-        setStatus("Can't solve");
+    return runSolver(model, setModel, reverse ? 'reverse' : '').then(
+      (result) => {
+        if (result) {
+          setStatus('Success');
+        } else {
+          setStatus("Can't solve");
+        }
       }
-    });
+    );
   }, [model, setModel, setStatus, reverse]);
   const clear = useCallback(() => {
     setModel(createEmptyModel());
