@@ -37,7 +37,7 @@ const rows = function* (model, setModel, count) {
 const runSolver = (model, showModel, processEmptyCells) => {
   const solverWorker = new Worker(
     new URL('./backtracking-solver/solver.worker.js', import.meta.url),
-    { type: 'module' } // note that this doesn't in Firefox at dev time -- build is fine
+    { type: 'module' } // note that this doesn't in Firefox 110 at dev time -- build is fine
   );
   const sm = _.debounce(showModel, 30, { leading: true, maxWait: 200 });
   return new Promise((res) => {
